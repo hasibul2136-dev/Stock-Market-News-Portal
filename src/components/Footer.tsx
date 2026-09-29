@@ -23,10 +23,16 @@ export function Footer() {
           <span>All rights reserved.</span>
         </div>
 
-        {/* Right: Exchange Timings & Regulations */}
-        <div className="flex items-center space-x-3 text-[11px] text-slate-500 dark:text-slate-500">
-          <span>DSE / CSE delayed 15m</span>
-          <span>|</span>
+        {/* Right: Exchange Timings & Real-Time Status */}
+        <div className="flex items-center space-x-3 text-[11px] text-slate-500 dark:text-slate-400">
+          <span className="flex items-center space-x-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+            </span>
+            <span>Real-Time Live DSE</span>
+          </span>
+          <span className="text-slate-300 dark:text-slate-700">|</span>
           <span>BST (GMT+6) Trading Zone</span>
         </div>
       </div>

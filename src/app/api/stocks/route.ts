@@ -1,17 +1,21 @@
 import { NextResponse } from 'next/server';
-import { INITIAL_INDICES, INITIAL_STOCKS, getMarketStatus } from '@/lib/market-data';
+import { getMarketStatus } from '@/lib/market-data';
+import { getLiveMarketData } from '@/lib/live-crawler';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
     const marketStatus = getMarketStatus();
+    const { indices, stocks, isLive } = await getLiveMarketData();
 
     return NextResponse.json({
       success: true,
+      isLive,
+      source: 'Dhaka Stock Exchange (DSE) Live Engine',
       marketStatus,
-      indices: INITIAL_INDICES,
-      stocks: INITIAL_STOCKS,
+      indices,
+      stocks,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {

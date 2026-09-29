@@ -1,3 +1,5 @@
+import { INITIAL_STOCKS, INITIAL_INDICES } from './market-data';
+
 export interface CandlePoint {
   time: string;
   open: number;
@@ -7,7 +9,7 @@ export interface CandlePoint {
   volume: number;
 }
 
-// Generate realistic technical chart data for DSE symbols
+// Generate realistic technical chart data perfectly anchored to official DSE closing prices
 export function getChartData(symbol: string, timeframe: '1D' | '1W' | '1M' | '1Y' = '1M'): {
   candles: CandlePoint[];
   basePrice: number;
@@ -16,74 +18,37 @@ export function getChartData(symbol: string, timeframe: '1D' | '1W' | '1M' | '1Y
   changePercent: number;
   unit: string;
 } {
-  const cleanSymbol = symbol.replace('$', '').toUpperCase();
+  const cleanSymbol = (symbol || 'GP').replace('$', '').toUpperCase();
 
-  let basePrice = 250;
-  let volatility = 0.015;
+  // Find exact quote from official DSE data
+  const matchedStock = INITIAL_STOCKS.find(s => s.symbol === cleanSymbol);
+  const matchedIndex = INITIAL_INDICES.find(i => 
+    i.symbol === cleanSymbol || 
+    (cleanSymbol === 'USDBDT' && i.symbol === 'USD / BDT') ||
+    (cleanSymbol.includes('CALL') && i.symbol === 'CALL MONEY')
+  );
+
+  let basePrice = 242.40;
+  let change = -1.10;
+  let changePercent = -0.45;
   let unit = '৳';
 
-  if (cleanSymbol === 'DSEX') {
-    basePrice = 5552.40;
-    volatility = 0.008;
-    unit = 'pts';
-  } else if (cleanSymbol === 'DS30') {
-    basePrice = 1985.20;
-    volatility = 0.007;
-    unit = 'pts';
-  } else if (cleanSymbol === 'DSES') {
-    basePrice = 1221.80;
-    volatility = 0.006;
-    unit = 'pts';
-  } else if (cleanSymbol === 'CASPI') {
-    basePrice = 15580.40;
-    volatility = 0.007;
-    unit = 'pts';
-  } else if (cleanSymbol.includes('CALL')) {
-    basePrice = 9.85;
-    volatility = 0.004;
-    unit = '%';
-  } else if (cleanSymbol.includes('BDT') || cleanSymbol.includes('USD')) {
-    basePrice = 121.75;
-    volatility = 0.002;
+  if (matchedStock) {
+    basePrice = matchedStock.price;
+    change = matchedStock.change;
+    changePercent = matchedStock.changePercent;
     unit = '৳';
-  } else if (cleanSymbol === 'GP') {
-    basePrice = 242.40;
-    volatility = 0.012;
-  } else if (cleanSymbol === 'SQURPHARMA') {
-    basePrice = 217.60;
-    volatility = 0.010;
-  } else if (cleanSymbol === 'BATBC') {
-    basePrice = 225.30;
-    volatility = 0.014;
-  } else if (cleanSymbol === 'BRACBANK') {
-    basePrice = 64.40;
-    volatility = 0.018;
-  } else if (cleanSymbol === 'WALTONHIL') {
-    basePrice = 343.50;
-    volatility = 0.015;
-  } else if (cleanSymbol === 'RENATA') {
-    basePrice = 452.60;
-    volatility = 0.013;
-  } else if (cleanSymbol === 'LHBL') {
-    basePrice = 61.80;
-    volatility = 0.016;
-  } else if (cleanSymbol === 'BEXIMCO') {
-    basePrice = 22.10;
-    volatility = 0.008;
-  } else if (cleanSymbol === 'ROBI') {
-    basePrice = 30.00;
-    volatility = 0.015;
-  } else if (cleanSymbol === 'CITYBANK') {
-    basePrice = 24.80;
-    volatility = 0.015;
+  } else if (matchedIndex) {
+    basePrice = matchedIndex.price;
+    change = matchedIndex.change;
+    changePercent = matchedIndex.changePercent;
+    unit = matchedIndex.symbol.includes('CALL') ? '%' : matchedIndex.symbol.includes('BDT') ? '৳' : 'pts';
   }
 
   const pointCount = timeframe === '1D' ? 24 : timeframe === '1W' ? 30 : timeframe === '1M' ? 35 : 45;
-  const candles: CandlePoint[] = [];
+  const volatility = 0.008;
 
-  let current = basePrice * (1 - volatility * (pointCount / 3));
-
-  // Seeded deterministic walk using symbol hash so chart doesn't wildly flash on every re-render
+  // Seeded deterministic walk using symbol hash so chart is consistent
   let seed = 0;
   for (let i = 0; i < cleanSymbol.length; i++) {
     seed = (seed << 5) - seed + cleanSymbol.charCodeAt(i);
@@ -96,17 +61,28 @@ export function getChartData(symbol: string, timeframe: '1D' | '1W' | '1M' | '1Y
   const now = Date.now();
   const timeStepMs = timeframe === '1D' ? 3600 * 1000 : timeframe === '1W' ? 86400 * 1000 * 0.5 : timeframe === '1M' ? 86400 * 1000 : 86400 * 1000 * 7;
 
-  for (let i = 0; i < pointCount; i++) {
+  // Generate historical points working backwards from the exact official closing basePrice
+  const rawCloses: number[] = new Array(pointCount);
+  rawCloses[pointCount - 1] = basePrice;
+
+  let currentBack = basePrice;
+  for (let i = pointCount - 2; i >= 0; i--) {
     const r1 = pseudoRand(i * 3 + 1);
+    const delta = (r1 - 0.49) * volatility * currentBack;
+    currentBack = +(currentBack - delta).toFixed(2);
+    rawCloses[i] = currentBack;
+  }
+
+  const candles: CandlePoint[] = [];
+  for (let i = 0; i < pointCount; i++) {
+    const close = rawCloses[i];
+    const open = i === 0 ? +(close * 0.998).toFixed(2) : rawCloses[i - 1];
     const r2 = pseudoRand(i * 3 + 2);
     const r3 = pseudoRand(i * 3 + 3);
 
-    const delta = (r1 - 0.47) * volatility * current;
-    const open = current;
-    const close = +(open + delta).toFixed(2);
-    const high = +(Math.max(open, close) + r2 * volatility * current * 0.7).toFixed(2);
-    const low = +(Math.min(open, close) - r3 * volatility * current * 0.7).toFixed(2);
-    const volume = Math.floor((cleanSymbol.includes('DSE') ? 50000000 : 150000) * (0.6 + r1 * 0.8));
+    const high = +(Math.max(open, close) + r2 * volatility * close * 0.5).toFixed(2);
+    const low = +(Math.min(open, close) - r3 * volatility * close * 0.5).toFixed(2);
+    const volume = Math.floor((cleanSymbol.includes('DSE') ? 50000000 : 150000) * (0.6 + r2 * 0.8));
 
     const pointTime = new Date(now - (pointCount - 1 - i) * timeStepMs);
     const timeLabel = timeframe === '1D' 
@@ -121,21 +97,22 @@ export function getChartData(symbol: string, timeframe: '1D' | '1W' | '1M' | '1Y
       close,
       volume,
     });
-
-    current = close;
   }
 
-  const firstClose = candles[0].open;
-  const lastClose = candles[candles.length - 1].close;
-  const change = +(lastClose - firstClose).toFixed(2);
-  const changePercent = +((change / firstClose) * 100).toFixed(2);
+  // Ensure final candle close is EXACTLY the official closing basePrice
+  candles[candles.length - 1].close = basePrice;
+
+  // Calculate actual period change
+  const periodOpen = candles[0].open;
+  const periodChange = +(basePrice - periodOpen).toFixed(2);
+  const periodChangePercent = +((periodChange / periodOpen) * 100).toFixed(2);
 
   return {
     candles,
     basePrice,
-    currentPrice: lastClose,
-    change,
-    changePercent,
+    currentPrice: basePrice,
+    change: timeframe === '1D' ? change : periodChange,
+    changePercent: timeframe === '1D' ? changePercent : periodChangePercent,
     unit,
   };
 }
