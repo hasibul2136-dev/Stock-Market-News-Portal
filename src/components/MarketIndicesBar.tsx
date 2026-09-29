@@ -52,7 +52,7 @@ function Sparkline({ data, isPositive }: { data: number[]; isPositive: boolean }
 
 export function MarketIndicesBar({ indices, onSelectIndex }: MarketIndicesBarProps) {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
+    <section className="mx-auto w-full max-w-[1920px] px-4 py-4 sm:px-6 lg:px-8 xl:px-12">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {indices.map((idx) => {
           const isPositive = idx.change >= 0;

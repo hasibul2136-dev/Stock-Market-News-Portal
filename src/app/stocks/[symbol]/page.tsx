@@ -25,6 +25,7 @@ import {
   BarChart3,
   Users
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function StockDetailPage() {
   const params = useParams();
@@ -106,7 +107,7 @@ export default function StockDetailPage() {
     <div className="min-h-screen bg-slate-100 text-slate-900 transition-colors duration-200 dark:bg-[#090d16] dark:text-slate-100">
       {/* Top Navigation */}
       <div className="border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-[#0d131f]/90 sticky top-0 z-30">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+        <div className="mx-auto flex w-full max-w-[1920px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8 xl:px-12">
           <div className="flex items-center space-x-4">
             <Link
               href="/"
@@ -127,6 +128,8 @@ export default function StockDetailPage() {
           </div>
 
           <div className="flex items-center space-x-2">
+            <ThemeToggle />
+
             <button
               onClick={handleShare}
               className="flex items-center space-x-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
@@ -138,7 +141,7 @@ export default function StockDetailPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+      <div className="mx-auto w-full max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:px-12">
         {/* Company Header Card */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-[#0d131f]/90">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

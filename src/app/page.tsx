@@ -227,11 +227,11 @@ export default function HomePage() {
       />
 
       {/* 5. Main Dashboard Body */}
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-3 sm:px-6">
+      <main className="mx-auto w-full max-w-[1920px] flex-1 px-4 py-3 sm:px-6 lg:px-8 xl:px-12">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           
-          {/* LEFT 8 COLUMNS: News Feed & Filter Toolbar */}
-          <div className="space-y-4 lg:col-span-8">
+          {/* LEFT COLUMNS: News Feed & Filter Toolbar */}
+          <div className="space-y-4 lg:col-span-8 xl:col-span-8 2xl:col-span-9">
             <FilterBar
               activeCategory={activeCategory}
               onSelectCategory={(cat) => setActiveCategory(cat)}
@@ -247,7 +247,7 @@ export default function HomePage() {
             />
 
             {loading ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div
                     key={i}
@@ -277,7 +277,7 @@ export default function HomePage() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {articles.map((art) => (
                   <NewsCard
                     key={art.id}
@@ -292,8 +292,8 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* RIGHT 4 COLUMNS: Financial Rail & Interactive Widgets */}
-          <div className="space-y-4 lg:col-span-4">
+          {/* RIGHT COLUMNS: Financial Rail & Interactive Widgets */}
+          <div className="space-y-4 lg:col-span-4 xl:col-span-4 2xl:col-span-3">
             
             {/* 1. Market Sentiment Gauge */}
             <SentimentMeter
@@ -404,7 +404,7 @@ export default function HomePage() {
 
       {/* 6. Footer */}
       <footer className="mt-12 border-t border-slate-200 bg-slate-100 py-6 text-center text-xs text-slate-500 transition-colors duration-200 dark:border-slate-800/80 dark:bg-[#060a12] dark:text-slate-500">
-        <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8 xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center space-x-2">
             <span className="font-mono font-bold text-slate-700 dark:text-slate-400">DSE PULSE TERMINAL</span>
             <span>•</span>

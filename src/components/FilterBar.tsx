@@ -47,7 +47,7 @@ export function FilterBar({
   return (
     <div className="space-y-3">
       {/* Category Tabs */}
-      <div className="flex items-center overflow-x-auto pb-1 scrollbar-none border-b border-slate-800">
+      <div className="flex items-center overflow-x-auto pb-1 scrollbar-none border-b border-slate-200 dark:border-slate-800">
         <div className="flex space-x-1">
           {CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat.value;
@@ -57,8 +57,8 @@ export function FilterBar({
                 onClick={() => onSelectCategory(cat.value)}
                 className={`whitespace-nowrap px-3.5 py-2 text-xs font-semibold transition border-b-2 ${
                   isActive
-                    ? 'border-emerald-400 text-emerald-400 bg-emerald-950/20'
-                    : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                    ? 'border-emerald-600 text-emerald-800 bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400 dark:bg-emerald-950/40 font-bold'
+                    : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-400 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:border-slate-600'
                 }`}
               >
                 {cat.label}
@@ -72,17 +72,17 @@ export function FilterBar({
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
         {/* Active Filters readout */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-xs text-slate-400">
-            Showing <strong className="text-white">{totalArticles}</strong> DSE stories
+          <span className="font-mono text-xs text-slate-600 dark:text-slate-400">
+            Showing <strong className="text-slate-900 dark:text-white font-bold">{totalArticles}</strong> DSE stories
           </span>
 
           {activeTicker && (
-            <span className="inline-flex items-center space-x-1 rounded-full border border-emerald-500/40 bg-emerald-950/70 px-2.5 py-0.5 text-xs font-mono font-bold text-emerald-300">
+            <span className="inline-flex items-center space-x-1 rounded-full border border-emerald-500/40 bg-emerald-100 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-300 px-2.5 py-0.5 text-xs font-mono font-bold">
               <Tag className="h-3 w-3 mr-1" />
               <span>{activeTicker}</span>
               <button
                 onClick={onClearTicker}
-                className="ml-1 hover:text-white"
+                className="ml-1 hover:text-emerald-950 dark:hover:text-white"
                 title="Clear ticker filter"
               >
                 <X className="h-3 w-3" />
@@ -91,11 +91,11 @@ export function FilterBar({
           )}
 
           {searchQuery && (
-            <span className="inline-flex items-center space-x-1 rounded-full border border-slate-700 bg-slate-800/80 px-2.5 py-0.5 text-xs text-slate-200">
+            <span className="inline-flex items-center space-x-1 rounded-full border border-slate-300 bg-slate-100 text-slate-800 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 px-2.5 py-0.5 text-xs">
               <span>Query: "{searchQuery}"</span>
               <button
                 onClick={onClearSearch}
-                className="ml-1 hover:text-white"
+                className="ml-1 hover:text-slate-950 dark:hover:text-white"
                 title="Clear search"
               >
                 <X className="h-3 w-3" />
@@ -104,11 +104,11 @@ export function FilterBar({
           )}
 
           {activeSentiment !== 'all' && (
-            <span className="inline-flex items-center space-x-1 rounded-full border border-slate-700 bg-slate-800/80 px-2.5 py-0.5 text-xs font-semibold capitalize text-slate-200">
+            <span className="inline-flex items-center space-x-1 rounded-full border border-slate-300 bg-slate-100 text-slate-800 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 px-2.5 py-0.5 text-xs font-semibold capitalize">
               <span>Sentiment: {activeSentiment}</span>
               <button
                 onClick={() => onSelectSentiment('all')}
-                className="ml-1 hover:text-white"
+                className="ml-1 hover:text-slate-950 dark:hover:text-white"
                 title="Reset sentiment"
               >
                 <X className="h-3 w-3" />
@@ -124,7 +124,7 @@ export function FilterBar({
                 onSelectSentiment('all');
                 onSelectCategory('all');
               }}
-              className="text-[11px] font-semibold text-rose-400 hover:text-rose-300 underline underline-offset-2 ml-1"
+              className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 underline underline-offset-2 ml-1"
             >
               Reset all
             </button>
@@ -133,12 +133,12 @@ export function FilterBar({
 
         {/* Sort Dropdown */}
         <div className="flex items-center space-x-2">
-          <ArrowUpDown className="h-3.5 w-3.5 text-slate-400" />
-          <span className="text-xs text-slate-400">Sort by:</span>
+          <ArrowUpDown className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+          <span className="text-xs text-slate-600 dark:text-slate-400">Sort by:</span>
           <select
             value={sortBy}
             onChange={(e) => onSelectSort(e.target.value as any)}
-            className="rounded-lg border border-slate-800 bg-[#0f172a] px-2.5 py-1 text-xs text-slate-200 focus:border-emerald-500 focus:outline-none"
+            className="rounded-lg border border-slate-300 bg-white text-slate-900 px-2.5 py-1 text-xs shadow-sm transition dark:border-slate-800 dark:bg-[#0f172a] dark:text-slate-200 focus:border-emerald-500 focus:outline-none"
           >
             <option value="latest">Latest First</option>
             <option value="sentiment-bullish">Most Bullish</option>

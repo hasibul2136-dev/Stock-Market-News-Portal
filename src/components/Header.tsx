@@ -12,6 +12,7 @@ import {
   Zap,
   Globe
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -101,7 +102,7 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 text-slate-900 shadow-sm backdrop-blur-md transition-colors duration-200 dark:border-slate-800/80 dark:bg-[#090d16]/95 dark:text-slate-100">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+      <div className="mx-auto flex w-full max-w-[1920px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8 xl:px-12">
         {/* Brand / Logo */}
         <div className="flex items-center space-x-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-cyan-500 shadow-lg shadow-emerald-500/20">
@@ -194,18 +195,7 @@ export function Header({
           </button>
 
           {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-[#0f172a] dark:text-slate-300 dark:hover:border-slate-700 dark:hover:text-white"
-          >
-            {isDark ? (
-              <Sun className="h-4 w-4 text-amber-400" />
-            ) : (
-              <Moon className="h-4 w-4 text-slate-700" />
-            )}
-          </button>
+          <ThemeToggle />
         </div>
       </div>
 

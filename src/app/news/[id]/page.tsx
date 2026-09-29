@@ -16,6 +16,7 @@ import {
   Check,
   Building2
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function NewsArticlePage() {
   const params = useParams();
@@ -75,7 +76,7 @@ export default function NewsArticlePage() {
     <div className="min-h-screen bg-slate-100 text-slate-900 transition-colors duration-200 dark:bg-[#090d16] dark:text-slate-100">
       {/* Top Navbar */}
       <div className="border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-[#0d131f]/90 sticky top-0 z-30">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
+        <div className="mx-auto flex w-full max-w-[1920px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8 xl:px-12">
           <Link
             href="/"
             className="flex items-center space-x-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
@@ -85,6 +86,8 @@ export default function NewsArticlePage() {
           </Link>
 
           <div className="flex items-center space-x-2">
+            <ThemeToggle />
+
             <button
               onClick={handleShare}
               className="flex items-center space-x-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
@@ -107,7 +110,7 @@ export default function NewsArticlePage() {
       </div>
 
       {/* Main Reading Container */}
-      <article className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+      <article className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Source & Metadata */}
         <div className="flex flex-wrap items-center gap-3 text-xs">
           <span className="rounded bg-emerald-100 px-2.5 py-0.5 font-bold uppercase tracking-wider text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800/60">
