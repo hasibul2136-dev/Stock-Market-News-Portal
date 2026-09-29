@@ -155,7 +155,7 @@ export function Header({
         {/* Right Action & Status Controls */}
         <div className="flex items-center space-x-3">
           {/* Live Market Hours Indicator */}
-          <div className="hidden lg:flex items-center space-x-2 rounded-lg border border-slate-200 bg-slate-100/80 px-3 py-1.5 dark:border-slate-800 dark:bg-[#0f172a]/70">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 rounded-lg border border-slate-200 bg-slate-100/80 px-2 sm:px-3 py-1 sm:py-1.5 dark:border-slate-800 dark:bg-[#0f172a]/70">
             <span className="relative flex h-2 w-2">
               {marketStatus.isOpen ? (
                 <>
@@ -166,10 +166,10 @@ export function Header({
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
               )}
             </span>
-            <span className="font-mono text-[11px] font-medium text-slate-700 dark:text-slate-300">
+            <span className="font-mono text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300">
               {marketStatus.statusText}
             </span>
-            <span className="text-[10px] text-slate-500">
+            <span className="hidden sm:inline text-[10px] text-slate-500">
               • {currentTime || 'BST'}
             </span>
           </div>

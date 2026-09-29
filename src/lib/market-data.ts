@@ -188,22 +188,35 @@ export function getMarketStatus(): { isOpen: boolean; statusText: string; nextEv
   const now = new Date();
   const bstTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Dhaka" });
   const bstDate = new Date(bstTimeStr);
-  const day = bstDate.getDay();
+  const day = bstDate.getDay(); // 0: Sun, 1: Mon, 2: Tue, 3: Wed, 4: Thu, 5: Fri, 6: Sat
   const hours = bstDate.getHours();
   const minutes = bstDate.getMinutes();
   const currentMinuteOfDay = hours * 60 + minutes;
 
+  // Trading days: Sunday (0) to Thursday (4)
   const isTradingDay = day >= 0 && day <= 4;
-  const isDuringHours = currentMinuteOfDay >= 600 && currentMinuteOfDay < 870;
+  const isRegularTrading = currentMinuteOfDay >= 600 && currentMinuteOfDay < 840; // 10:00 AM to 2:00 PM
+  const isPostClosing = currentMinuteOfDay >= 840 && currentMinuteOfDay < 850;   // 2:00 PM to 2:10 PM
 
-  if (isTradingDay && isDuringHours) {
+  // Regular Trading Session
+  if (isTradingDay && isRegularTrading) {
     return {
       isOpen: true,
       statusText: 'DSE TRADING OPEN',
-      nextEvent: 'Closes at 2:30 PM BST',
+      nextEvent: 'Closes at 2:00 PM BST',
     };
   }
 
+  // Post-closing Session (trading only at closing price)
+  if (isTradingDay && isPostClosing) {
+    return {
+      isOpen: false,
+      statusText: 'POST-CLOSING SESSION',
+      nextEvent: 'Ends at 2:10 PM BST',
+    };
+  }
+
+  // Pre-market Opening
   if (isTradingDay && currentMinuteOfDay < 600) {
     return {
       isOpen: false,
@@ -212,7 +225,8 @@ export function getMarketStatus(): { isOpen: boolean; statusText: string; nextEv
     };
   }
 
-  if (day === 4 && currentMinuteOfDay >= 870) {
+  // Thursday after market close -> Weekend
+  if (day === 4 && currentMinuteOfDay >= 850) {
     return {
       isOpen: false,
       statusText: 'MARKET CLOSED (WEEKEND)',
@@ -220,6 +234,7 @@ export function getMarketStatus(): { isOpen: boolean; statusText: string; nextEv
     };
   }
 
+  // Friday or Saturday -> Weekend
   if (day === 5 || day === 6) {
     return {
       isOpen: false,
@@ -228,9 +243,10 @@ export function getMarketStatus(): { isOpen: boolean; statusText: string; nextEv
     };
   }
 
+  // Weekday afternoon / evening after 2:10 PM
   return {
     isOpen: false,
     statusText: 'DSE CLOSED',
-    nextEvent: 'Opens next trading day 10:00 AM BST',
+    nextEvent: 'Opens tomorrow 10:00 AM BST',
   };
 }
