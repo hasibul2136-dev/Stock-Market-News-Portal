@@ -17,6 +17,7 @@ import {
   Building2
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Footer } from '@/components/Footer';
 
 export default function NewsArticlePage() {
   const params = useParams();
@@ -237,6 +238,8 @@ export default function NewsArticlePage() {
           </div>
         )}
       </article>
+
+      <Footer />
     </div>
   );
 }

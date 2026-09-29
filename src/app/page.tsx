@@ -12,6 +12,7 @@ import { SentimentMeter } from '@/components/SentimentMeter';
 import { TradingViewWidget } from '@/components/TradingViewWidget';
 import { StockDetailModal } from '@/components/StockDetailModal';
 import { BookmarksModal } from '@/components/BookmarksModal';
+import { Footer } from '@/components/Footer';
 import { INITIAL_INDICES, INITIAL_STOCKS } from '@/lib/market-data';
 import { 
   TrendingUp, 
@@ -403,20 +404,7 @@ export default function HomePage() {
       </main>
 
       {/* 6. Footer */}
-      <footer className="mt-12 border-t border-slate-200 bg-slate-100 py-6 text-center text-xs text-slate-500 transition-colors duration-200 dark:border-slate-800/80 dark:bg-[#060a12] dark:text-slate-500">
-        <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8 xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center space-x-2">
-            <span className="font-mono font-bold text-slate-700 dark:text-slate-400">DSE PULSE TERMINAL</span>
-            <span>•</span>
-            <span>Dedicated Dhaka Stock Exchange & Bangladesh Financial Intelligence</span>
-          </div>
-          <div className="flex space-x-4">
-            <span className="text-slate-600 dark:text-slate-400">DSE / CSE delayed 15m</span>
-            <span className="text-slate-400 dark:text-slate-600">|</span>
-            <span className="text-slate-500">BST (GMT+6) Trading Zone</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* 7. Stock Detail Modal */}
       <StockDetailModal

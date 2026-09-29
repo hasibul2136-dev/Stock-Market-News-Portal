@@ -26,6 +26,7 @@ import {
   Users
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Footer } from '@/components/Footer';
 
 export default function StockDetailPage() {
   const params = useParams();
@@ -382,6 +383,8 @@ export default function StockDetailPage() {
 
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }
