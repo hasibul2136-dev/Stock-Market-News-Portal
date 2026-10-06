@@ -50,12 +50,27 @@ function Sparkline({ data, isPositive }: { data: number[]; isPositive: boolean }
   );
 }
 
+import { useLanguage } from '@/context/LanguageContext';
+
 export function MarketIndicesBar({ indices, onSelectIndex }: MarketIndicesBarProps) {
+  const { toBnNum, isBangla } = useLanguage();
+
   return (
     <section className="mx-auto w-full max-w-[1920px] px-4 py-4 sm:px-6 lg:px-8 xl:px-12">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {indices.map((idx) => {
           const isPositive = idx.change >= 0;
+          const formattedChangePct = toBnNum(Math.abs(idx.changePercent).toFixed(2));
+          const formattedChangePts = toBnNum(Math.abs(idx.change).toFixed(2));
+
+          const priceDisplay = idx.symbol.includes('CALL') 
+            ? `${toBnNum(idx.price.toFixed(2))}%` 
+            : idx.symbol.includes('BDT')
+            ? `৳${toBnNum(idx.price.toFixed(2))}`
+            : idx.price > 1000
+            ? toBnNum(idx.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+            : toBnNum(idx.price.toFixed(2));
+
           return (
             <div
               key={idx.symbol}
@@ -76,29 +91,23 @@ export function MarketIndicesBar({ indices, onSelectIndex }: MarketIndicesBarPro
                   ) : (
                     <ArrowDownRight className="h-3 w-3 stroke-[2.5]" />
                   )}
-                  {isPositive ? '+' : ''}
-                  {idx.changePercent.toFixed(2)}%
+                  {isPositive ? '+' : '-'}
+                  {formattedChangePct}%
                 </span>
               </div>
 
               <div className="mt-2 flex items-baseline justify-between">
                 <div>
                   <div className="font-mono text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
-                    {idx.symbol.includes('CALL') 
-                      ? `${idx.price.toFixed(2)}%` 
-                      : idx.symbol.includes('BDT')
-                      ? `৳${idx.price.toFixed(2)}`
-                      : idx.price > 1000
-                      ? idx.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                      : idx.price.toFixed(2)}
+                    {priceDisplay}
                   </div>
                   <div
                     className={`font-mono text-[10px] ${
                       isPositive ? 'text-emerald-600 dark:text-emerald-500' : 'text-rose-600 dark:text-rose-500'
                     }`}
                   >
-                    {isPositive ? '+' : ''}
-                    {idx.change.toFixed(2)} pts
+                    {isPositive ? '+' : '-'}
+                    {formattedChangePts} {isBangla ? 'পয়েন্ট' : 'pts'}
                   </div>
                 </div>
 

@@ -9,7 +9,10 @@ interface TickerMarqueeProps {
   onSelectTicker: (symbol: string) => void;
 }
 
+import { useLanguage } from '@/context/LanguageContext';
+
 export function TickerMarquee({ stocks, onSelectTicker }: TickerMarqueeProps) {
+  const { toBnNum } = useLanguage();
   const displayStocks = [...stocks, ...stocks];
 
   return (
@@ -27,7 +30,7 @@ export function TickerMarquee({ stocks, onSelectTicker }: TickerMarqueeProps) {
                 {stock.symbol}
               </span>
               <span className="text-slate-600 dark:text-slate-300">
-                ৳{stock.price.toFixed(2)}
+                ৳{toBnNum(stock.price.toFixed(2))}
               </span>
               <span
                 className={`flex items-center font-semibold ${
@@ -41,8 +44,8 @@ export function TickerMarquee({ stocks, onSelectTicker }: TickerMarqueeProps) {
                 ) : (
                   <ArrowDownRight className="mr-0.5 h-3 w-3 stroke-[2.5]" />
                 )}
-                {isPositive ? '+' : ''}
-                {stock.changePercent.toFixed(2)}%
+                {isPositive ? '+' : '-'}
+                {toBnNum(Math.abs(stock.changePercent).toFixed(2))}%
               </span>
             </button>
           );

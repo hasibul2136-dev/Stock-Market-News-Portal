@@ -7,12 +7,11 @@ import {
   Bookmark, 
   RefreshCw, 
   Clock, 
-  Sun, 
-  Moon, 
-  Zap,
   Globe
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -37,67 +36,45 @@ export function Header({
 }: HeaderProps) {
   const [searchInput, setSearchInput] = useState('');
   const [currentTime, setCurrentTime] = useState('');
-  const [isDark, setIsDark] = useState(true);
-
-  // Initialize theme from localStorage or system preference
-  useEffect(() => {
-    try {
-      const savedTheme = localStorage.getItem('dsepulse_theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const shouldBeDark = savedTheme ? savedTheme === 'dark' : prefersDark !== false;
-
-      setIsDark(shouldBeDark);
-      if (shouldBeDark) {
-        document.documentElement.classList.add('dark');
-        document.documentElement.classList.remove('light');
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.documentElement.classList.add('light');
-      }
-    } catch {
-      // Ignore localStorage errors
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    try {
-      localStorage.setItem('dsepulse_theme', nextDark ? 'dark' : 'light');
-    } catch {
-      // Ignore
-    }
-    if (nextDark) {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-    }
-  };
+  const { t, toBnNum, isBangla } = useLanguage();
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString('en-US', {
-          timeZone: 'Asia/Dhaka',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true,
-        }) + ' BST'
-      );
+      const timeStr = now.toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Dhaka',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      });
+
+      if (isBangla) {
+        setCurrentTime(toBnNum(timeStr) + ' বিএসটি');
+      } else {
+        setCurrentTime(timeStr + ' BST');
+      }
     };
 
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isBangla, toBnNum]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchInput);
+  };
+
+  // Localized Market Status Text
+  const getLocalizedMarketStatus = () => {
+    if (!isBangla) return marketStatus.statusText;
+    const txt = marketStatus.statusText.toUpperCase();
+    if (txt.includes('OPEN')) return t('market_open');
+    if (txt.includes('WEEKEND')) return t('market_weekend');
+    if (txt.includes('PRE-OPEN')) return t('market_pre_open');
+    if (txt.includes('POST-CLOS')) return t('market_post_close');
+    return t('market_closed');
   };
 
   return (
@@ -114,11 +91,11 @@ export function Header({
                 DSE<span className="text-emerald-600 dark:text-emerald-400">PULSE</span>
               </span>
               <span className="rounded bg-emerald-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-800 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-800/50">
-                BANGLADESH
+                {isBangla ? 'বাংলাদেশ' : 'BANGLADESH'}
               </span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
-              Dhaka Stock Exchange & National Economy Intelligence
+              {t('portal_subtitle')}
             </p>
           </div>
         </div>
@@ -134,7 +111,7 @@ export function Header({
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search DSE news, companies (GP, SQURPHARMA, BRACBANK)..."
+              placeholder={t('search_placeholder')}
               className="w-full rounded-lg border border-slate-300 bg-slate-50 py-2 pl-10 pr-10 text-xs text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-800 dark:bg-[#0f172a] dark:text-slate-200 dark:placeholder-slate-500"
             />
             {searchInput && (
@@ -153,7 +130,7 @@ export function Header({
         </form>
 
         {/* Right Action & Status Controls */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           {/* Live Market Hours Indicator */}
           <div className="flex items-center space-x-1.5 sm:space-x-2 rounded-lg border border-slate-200 bg-slate-100/80 px-2 sm:px-3 py-1 sm:py-1.5 dark:border-slate-800 dark:bg-[#0f172a]/70">
             <span className="relative flex h-2 w-2">
@@ -167,10 +144,10 @@ export function Header({
               )}
             </span>
             <span className="font-mono text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-              {marketStatus.statusText}
+              {getLocalizedMarketStatus()}
             </span>
             <span className="hidden sm:inline text-[10px] text-slate-500">
-              • {currentTime || 'BST'}
+              • {currentTime || (isBangla ? 'বিএসটি' : 'BST')}
             </span>
           </div>
 
@@ -178,7 +155,7 @@ export function Header({
           <button
             onClick={onRefresh}
             disabled={isRefreshing}
-            title="Refresh News Feed"
+            title={t('refresh_feed')}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:text-slate-900 disabled:opacity-50 dark:border-slate-800 dark:bg-[#0f172a] dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-white"
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-emerald-500' : ''}`} />
@@ -187,12 +164,15 @@ export function Header({
           {/* Bookmarks Counter */}
           <button
             onClick={onOpenBookmarks}
-            title="Saved Articles"
+            title={t('saved_articles')}
             className="relative flex h-9 items-center space-x-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-slate-700 transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-800 dark:bg-[#0f172a] dark:text-slate-300 dark:hover:border-slate-700 dark:hover:text-white"
           >
             <Bookmark className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
-            <span className="font-mono text-xs font-semibold">{bookmarkedCount}</span>
+            <span className="font-mono text-xs font-semibold">{toBnNum(bookmarkedCount)}</span>
           </button>
+
+          {/* Bangla / English Language Toggle Button */}
+          <LanguageToggle />
 
           {/* Theme Toggle Button */}
           <ThemeToggle />
@@ -207,7 +187,7 @@ export function Header({
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search DSE companies, banking, pharma..."
+            placeholder={t('search_placeholder')}
             className="w-full rounded-lg border border-slate-300 bg-slate-50 py-1.5 pl-9 pr-8 text-xs text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none dark:border-slate-800 dark:bg-[#0f172a] dark:text-slate-200 dark:placeholder-slate-500"
           />
         </form>

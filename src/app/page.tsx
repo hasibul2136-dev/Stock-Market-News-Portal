@@ -14,6 +14,7 @@ import { StockDetailModal } from '@/components/StockDetailModal';
 import { BookmarksModal } from '@/components/BookmarksModal';
 import { Footer } from '@/components/Footer';
 import { INITIAL_INDICES, INITIAL_STOCKS } from '@/lib/market-data';
+import { useLanguage } from '@/context/LanguageContext';
 import { 
   TrendingUp, 
   Flame, 
@@ -27,6 +28,7 @@ import {
 } from 'lucide-react';
 
 export default function HomePage() {
+  const { isBangla, toBnNum } = useLanguage();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [stocks, setStocks] = useState<StockQuote[]>(INITIAL_STOCKS);
   const [indices, setIndices] = useState<MarketIndex[]>(INITIAL_INDICES);
@@ -260,10 +262,10 @@ export default function HomePage() {
               <div className="rounded-xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-[#0d131f]">
                 <AlertCircle className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-600 mb-3" />
                 <h3 className="text-base font-bold text-slate-800 dark:text-slate-300">
-                  No matching DSE market intelligence found
+                  {isBangla ? 'কোনো ডিএসই সংবাদ পাওয়া যায়নি' : 'No matching DSE market intelligence found'}
                 </h3>
                 <p className="mt-1 text-xs text-slate-500">
-                  Try clearing your active category filters, company tags, or search query.
+                  {isBangla ? 'ফিল্টার, কোম্পানির ট্যাগ বা অনুসন্ধানের শব্দ পরিবর্তন করে চেষ্টা করুন।' : 'Try clearing your active category filters, company tags, or search query.'}
                 </p>
                 <button
                   onClick={() => {
@@ -274,7 +276,7 @@ export default function HomePage() {
                   }}
                   className="mt-4 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500 transition shadow"
                 >
-                  Reset All Filters
+                  {isBangla ? 'সব ফিল্টার মুছুন' : 'Reset All Filters'}
                 </button>
               </div>
             ) : (
@@ -311,7 +313,7 @@ export default function HomePage() {
               <div className="flex items-center space-x-2 pb-3 border-b border-slate-100 dark:border-slate-800">
                 <Flame className="h-4 w-4 text-emerald-500" />
                 <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                  Top Traded DSE Equities
+                  {isBangla ? 'ডিএসই শীর্ষ লেনদেনকৃত শেয়ার' : 'Top Traded DSE Equities'}
                 </h4>
               </div>
 
@@ -334,21 +336,21 @@ export default function HomePage() {
                           </span>
                         </div>
                         <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
-                          Vol: {stock.volume}
+                          {isBangla ? 'ভলিউম: ' : 'Vol: '}{toBnNum(stock.volume)}
                         </span>
                       </div>
 
                       <div className="text-right">
                         <div className="font-mono text-xs font-bold text-slate-900 dark:text-slate-100">
-                          ৳{stock.price.toFixed(2)}
+                          ৳{toBnNum(stock.price.toFixed(2))}
                         </div>
                         <div
                           className={`font-mono text-[10px] font-semibold ${
                             isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                           }`}
                         >
-                          {isPositive ? '+' : ''}
-                          {stock.changePercent.toFixed(2)}%
+                          {isPositive ? '+' : '-'}
+                          {toBnNum(Math.abs(stock.changePercent).toFixed(2))}%
                         </div>
                       </div>
                     </div>
@@ -362,38 +364,50 @@ export default function HomePage() {
               <div className="flex items-center space-x-2 pb-3 border-b border-slate-100 dark:border-slate-800">
                 <Landmark className="h-4 w-4 text-emerald-500" />
                 <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                  Bangladesh Economic Radar
+                  {isBangla ? 'বাংলাদেশ অর্থনৈতিক বার্তা' : 'Bangladesh Economic Radar'}
                 </h4>
               </div>
 
               <div className="mt-3 space-y-2.5 text-xs">
                 <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 dark:border-slate-800/80 dark:bg-slate-900/50">
                   <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">BB Repo Policy Rate</span>
-                    <span>Current: 10.00%</span>
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                      {isBangla ? 'বাংলাদেশ ব্যাংক রেপো রেট' : 'BB Repo Policy Rate'}
+                    </span>
+                    <span>{isBangla ? 'বর্তমান: ১০.০০%' : 'Current: 10.00%'}</span>
                   </div>
                   <p className="mt-1 text-slate-700 dark:text-slate-300 font-medium">
-                    Bangladesh Bank policy rate anchored to control food and non-food CPI inflation.
+                    {isBangla 
+                      ? 'মুদ্রাস্ফীতি নিয়ন্ত্রণে বাংলাদেশ ব্যাংকের নীতি সুদহার ১০ শতাংশে বহাল রয়েছে।' 
+                      : 'Bangladesh Bank policy rate anchored to control food and non-food CPI inflation.'}
                   </p>
                 </div>
 
                 <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 dark:border-slate-800/80 dark:bg-slate-900/50">
                   <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                    <span className="font-semibold text-teal-600 dark:text-teal-400">Forex Reserves & Remittance</span>
-                    <span>Reserves: $20.4B</span>
+                    <span className="font-semibold text-teal-600 dark:text-teal-400">
+                      {isBangla ? 'রিজার্ভ ও রেমিট্যান্স' : 'Forex Reserves & Remittance'}
+                    </span>
+                    <span>{isBangla ? 'রিজার্ভ: ২০.৪ বিলিয়ন ডলার' : 'Reserves: $20.4B'}</span>
                   </div>
                   <p className="mt-1 text-slate-700 dark:text-slate-300 font-medium">
-                    Remittance inflows cross $2.1B monthly mark, reinforcing balance of payments stability.
+                    {isBangla 
+                      ? 'মাসিক রেমিট্যান্স প্রবাহ ২.১ বিলিয়ন ডলার ছাড়িয়েছে, যা বৈদেশিক মুদ্রার রিজার্ভে ভারসাম্য আনছে।' 
+                      : 'Remittance inflows cross $2.1B monthly mark, reinforcing balance of payments stability.'}
                   </p>
                 </div>
 
                 <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 dark:border-slate-800/80 dark:bg-slate-900/50">
                   <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                    <span className="font-semibold text-amber-600 dark:text-amber-400">DSE Daily Market Turnover</span>
-                    <span>Avg: ৳650+ Crore</span>
+                    <span className="font-semibold text-amber-600 dark:text-amber-400">
+                      {isBangla ? 'ডিএসই দৈনিক গড় লেনদেন' : 'DSE Daily Market Turnover'}
+                    </span>
+                    <span>{isBangla ? 'গড়: ৬৫০+ কোটি টাকা' : 'Avg: ৳650+ Crore'}</span>
                   </div>
                   <p className="mt-1 text-slate-700 dark:text-slate-300 font-medium">
-                    Institutional participation surges across banking, pharmaceuticals, and telecommunications.
+                    {isBangla 
+                      ? 'ব্যাংকিং, ওষুধ এবং টেলিযোগাযোগ খাতে প্রাতিষ্ঠানিক বিনিয়োগ বৃদ্ধি পাচ্ছে।' 
+                      : 'Institutional participation surges across banking, pharmaceuticals, and telecommunications.'}
                   </p>
                 </div>
               </div>

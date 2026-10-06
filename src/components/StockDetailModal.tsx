@@ -4,6 +4,8 @@ import React from 'react';
 import { StockQuote, NewsArticle } from '@/types';
 import { TradingViewWidget } from './TradingViewWidget';
 import { X, ArrowUpRight, ArrowDownRight, ExternalLink, Filter } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import { translateHeadline } from '@/lib/translator';
 
 interface StockDetailModalProps {
   stock: StockQuote | null;
@@ -20,6 +22,8 @@ export function StockDetailModal({
   onClose,
   onFilterByTicker,
 }: StockDetailModalProps) {
+  const { toBnNum, isBangla } = useLanguage();
+
   if (!isOpen || !stock) return null;
 
   const isPositive = stock.change >= 0;
@@ -80,7 +84,7 @@ export function StockDetailModal({
               className="flex items-center space-x-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 dark:hover:bg-emerald-900"
             >
               <Filter className="h-3.5 w-3.5" />
-              <span>Filter Portal By {stock.symbol}</span>
+              <span>{isBangla ? `${stock.symbol} দিয়ে ফিল্টার` : `Filter Portal By ${stock.symbol}`}</span>
             </button>
 
             <button
@@ -95,27 +99,35 @@ export function StockDetailModal({
         {/* Stats Grid */}
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 dark:border-slate-800/80 dark:bg-[#0f172a]/60">
-            <span className="text-[10px] uppercase text-slate-500">Day Range</span>
+            <span className="text-[10px] uppercase text-slate-500">
+              {isBangla ? 'দিনের পরিসীমা' : 'Day Range'}
+            </span>
             <p className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200">
-              ৳{stock.low.toFixed(2)} - ৳{stock.high.toFixed(2)}
+              ৳{toBnNum(stock.low.toFixed(2))} - ৳{toBnNum(stock.high.toFixed(2))}
             </p>
           </div>
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 dark:border-slate-800/80 dark:bg-[#0f172a]/60">
-            <span className="text-[10px] uppercase text-slate-500">Traded Volume</span>
+            <span className="text-[10px] uppercase text-slate-500">
+              {isBangla ? 'লেনদেনের পরিমাণ' : 'Traded Volume'}
+            </span>
             <p className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200">
-              {stock.volume}
+              {toBnNum(stock.volume)}
             </p>
           </div>
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 dark:border-slate-800/80 dark:bg-[#0f172a]/60">
-            <span className="text-[10px] uppercase text-slate-500">Market Cap</span>
+            <span className="text-[10px] uppercase text-slate-500">
+              {isBangla ? 'বাজার মূলধন' : 'Market Cap'}
+            </span>
             <p className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200">
               {stock.marketCap || 'N/A'}
             </p>
           </div>
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 dark:border-slate-800/80 dark:bg-[#0f172a]/60">
-            <span className="text-[10px] uppercase text-slate-500">Sector</span>
+            <span className="text-[10px] uppercase text-slate-500">
+              {isBangla ? 'খাত' : 'Sector'}
+            </span>
             <p className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-              {stock.category || 'DSE Equity'}
+              {stock.category || (isBangla ? 'ডিএসই শেয়ার' : 'DSE Equity')}
             </p>
           </div>
         </div>
@@ -128,12 +140,12 @@ export function StockDetailModal({
         {/* Specific News for this Ticker */}
         <div className="mt-6 border-t border-slate-200 pt-4 dark:border-slate-800">
           <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-3">
-            Recent DSE Intelligence & Disclosures for {stock.symbol}
+            {isBangla ? `${stock.symbol} সম্পর্কিত সাম্প্রতিক সংবাদ ও তথ্য` : `Recent DSE Intelligence & Disclosures for ${stock.symbol}`}
           </h4>
 
           {relatedArticles.length === 0 ? (
             <p className="text-xs text-slate-500 italic">
-              No direct corporate disclosures tagged for {stock.symbol} in recent feeds. Click "Filter Portal" to search broader mentions.
+              {isBangla ? `${stock.symbol} সম্পর্কিত কোনো নির্দিষ্ট সংবাদ পাওয়া যায়নি।` : `No direct corporate disclosures tagged for ${stock.symbol} in recent feeds. Click "Filter Portal" to search broader mentions.`}
             </p>
           ) : (
             <div className="space-y-2">
@@ -152,7 +164,7 @@ export function StockDetailModal({
                       rel="noopener noreferrer"
                       className="text-xs font-semibold text-slate-800 hover:text-emerald-600 dark:text-slate-200 dark:hover:text-emerald-400 transition"
                     >
-                      {art.title}
+                      {isBangla ? translateHeadline(art.title) : art.title}
                     </a>
                   </div>
                   <a

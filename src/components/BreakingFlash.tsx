@@ -3,6 +3,8 @@
 import React from 'react';
 import { NewsArticle } from '@/types';
 import { AlertCircle, ExternalLink, Zap } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import { translateHeadline } from '@/lib/translator';
 
 interface BreakingFlashProps {
   article: NewsArticle | null;
@@ -10,7 +12,11 @@ interface BreakingFlashProps {
 }
 
 export function BreakingFlash({ article, onSelectArticle }: BreakingFlashProps) {
+  const { t, isBangla } = useLanguage();
+
   if (!article) return null;
+
+  const displayTitle = isBangla ? translateHeadline(article.title) : article.title;
 
   return (
     <div className="mx-auto w-full max-w-[1920px] px-4 sm:px-6 lg:px-8 xl:px-12 mb-3">
@@ -22,12 +28,12 @@ export function BreakingFlash({ article, onSelectArticle }: BreakingFlashProps) 
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
               </span>
-              <span>FLASH ALERT</span>
+              <span>{t('flash_alert')}</span>
             </span>
 
             <p className="line-clamp-1 font-semibold text-slate-900 text-sm hover:text-emerald-700 dark:text-slate-100 dark:hover:text-cyan-400 cursor-pointer transition"
                onClick={() => onSelectArticle(article)}>
-              {article.title}
+              {displayTitle}
             </p>
           </div>
 
@@ -47,7 +53,7 @@ export function BreakingFlash({ article, onSelectArticle }: BreakingFlashProps) 
               rel="noopener noreferrer"
               className="flex items-center space-x-1 text-xs text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition"
             >
-              <span>Source</span>
+              <span>{t('source')}</span>
               <ExternalLink className="h-3 w-3" />
             </a>
           </div>

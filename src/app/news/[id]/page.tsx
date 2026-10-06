@@ -17,12 +17,16 @@ import {
   Building2
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { Footer } from '@/components/Footer';
+import { useLanguage } from '@/context/LanguageContext';
+import { translateHeadline, CATEGORY_BN } from '@/lib/translator';
 
 export default function NewsArticlePage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
+  const { isBangla, toBnNum } = useLanguage();
 
   const [article, setArticle] = useState<NewsArticle | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<NewsArticle[]>([]);
@@ -83,10 +87,11 @@ export default function NewsArticlePage() {
             className="flex items-center space-x-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to Portal</span>
+            <span>{isBangla ? 'পোর্টাল-এ ফিরুন' : 'Back to Portal'}</span>
           </Link>
 
           <div className="flex items-center space-x-2">
+            <LanguageToggle />
             <ThemeToggle />
 
             <button
@@ -94,7 +99,7 @@ export default function NewsArticlePage() {
               className="flex items-center space-x-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Share2 className="h-3.5 w-3.5" />}
-              <span>{copied ? 'Copied' : 'Share'}</span>
+              <span>{copied ? (isBangla ? 'কপি হয়েছে' : 'Copied') : (isBangla ? 'শেয়ার' : 'Share')}</span>
             </button>
 
             <a
@@ -103,7 +108,7 @@ export default function NewsArticlePage() {
               rel="noopener noreferrer"
               className="flex items-center space-x-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500"
             >
-              <span>Original Source</span>
+              <span>{isBangla ? 'মূল উৎস' : 'Original Source'}</span>
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           </div>
@@ -118,19 +123,21 @@ export default function NewsArticlePage() {
             {article.source}
           </span>
           <span className="text-slate-500">•</span>
-          <span className="text-slate-500 uppercase">{article.category.replace('_', ' ')}</span>
+          <span className="text-slate-500 uppercase">
+            {isBangla ? (CATEGORY_BN[article.category] || article.category) : article.category.replace('_', ' ')}
+          </span>
           <span className="text-slate-500">•</span>
           <span className="flex items-center space-x-1 text-slate-500">
             <Clock className="h-3.5 w-3.5" />
-            <span>{new Date(article.publishedAt).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+            <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
           </span>
           <span className="text-slate-500">•</span>
-          <span className="text-slate-500">{article.readTimeMinutes} min read</span>
+          <span className="text-slate-500">{toBnNum(article.readTimeMinutes)} {isBangla ? 'মিনিট পাঠ' : 'min read'}</span>
         </div>
 
         {/* Headline */}
         <h1 className="mt-4 text-2xl sm:text-3xl font-extrabold leading-tight text-slate-900 dark:text-white">
-          {article.title}
+          {isBangla ? translateHeadline(article.title) : article.title}
         </h1>
 
         {/* Sentiment Analysis Pill */}

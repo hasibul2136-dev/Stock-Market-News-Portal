@@ -9,9 +9,11 @@ import {
   Bookmark, 
   Share2, 
   Clock, 
-  ExternalLink,
-  Tag
+  ExternalLink, 
+  Tag 
 } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import { translateHeadline, CATEGORY_BN } from '@/lib/translator';
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -21,13 +23,15 @@ interface NewsCardProps {
   onSelectCategory: (category: any) => void;
 }
 
-function SentimentBadge({ sentiment, score }: { sentiment: SentimentType; score: number }) {
+function SentimentBadge({ sentiment, score, isBangla, toBnNum }: { sentiment: SentimentType; score: number; isBangla: boolean; toBnNum: (n: any) => string }) {
+  const formattedScore = toBnNum(Math.abs(score).toFixed(2));
+
   if (sentiment === 'bullish') {
     return (
       <span className="inline-flex items-center space-x-1 rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-400">
         <TrendingUp className="h-3 w-3" />
-        <span>BULLISH</span>
-        <span className="opacity-80">+{Math.abs(score).toFixed(2)}</span>
+        <span>{isBangla ? 'বুলিশ' : 'BULLISH'}</span>
+        <span className="opacity-80">+{formattedScore}</span>
       </span>
     );
   }
@@ -35,28 +39,28 @@ function SentimentBadge({ sentiment, score }: { sentiment: SentimentType; score:
     return (
       <span className="inline-flex items-center space-x-1 rounded-full border border-rose-300 bg-rose-50 px-2 py-0.5 font-mono text-[11px] font-bold text-rose-700 dark:border-rose-500/30 dark:bg-rose-950/60 dark:text-rose-400">
         <TrendingDown className="h-3 w-3" />
-        <span>BEARISH</span>
-        <span className="opacity-80">-{Math.abs(score).toFixed(2)}</span>
+        <span>{isBangla ? 'বেয়ারিশ' : 'BEARISH'}</span>
+        <span className="opacity-80">-{formattedScore}</span>
       </span>
     );
   }
   return (
     <span className="inline-flex items-center space-x-1 rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300">
       <Minus className="h-3 w-3" />
-      <span>NEUTRAL</span>
+      <span>{isBangla ? 'নিরপেক্ষ' : 'NEUTRAL'}</span>
     </span>
   );
 }
 
-function timeAgo(dateString: string): string {
+function formatTimeAgo(dateString: string, isBangla: boolean, toBnNum: (n: any) => string): string {
   try {
     const diff = (Date.now() - new Date(dateString).getTime()) / 1000;
-    if (diff < 60) return 'Just now';
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return `${Math.floor(diff / 86400)}d ago`;
+    if (diff < 60) return isBangla ? 'এইমাত্র' : 'Just now';
+    if (diff < 3600) return `${toBnNum(Math.floor(diff / 60))}${isBangla ? ' মিনিট আগে' : 'm ago'}`;
+    if (diff < 86400) return `${toBnNum(Math.floor(diff / 3600))}${isBangla ? ' ঘণ্টা আগে' : 'h ago'}`;
+    return `${toBnNum(Math.floor(diff / 86400))}${isBangla ? ' দিন আগে' : 'd ago'}`;
   } catch {
-    return 'Recent';
+    return isBangla ? 'সাম্প্রতিক' : 'Recent';
   }
 }
 
@@ -67,6 +71,8 @@ export function NewsCard({
   onSelectTicker,
   onSelectCategory,
 }: NewsCardProps) {
+  const { t, toBnNum, isBangla } = useLanguage();
+
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (navigator.share) {
@@ -80,9 +86,14 @@ export function NewsCard({
       }
     } else {
       navigator.clipboard.writeText(article.url);
-      alert('Article link copied to clipboard!');
+      alert(t('copied_clipboard'));
     }
   };
+
+  const displayTitle = isBangla ? translateHeadline(article.title) : article.title;
+  const displayCategory = isBangla 
+    ? (CATEGORY_BN[article.category] || article.category) 
+    : article.category.replace('_', ' ');
 
   return (
     <article className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:border-emerald-300 hover:shadow-md dark:border-slate-800 dark:bg-[#0d131f]/80 dark:hover:border-slate-700 dark:hover:bg-[#121929] dark:hover:shadow-emerald-500/5">
@@ -116,11 +127,16 @@ export function NewsCard({
                 onClick={() => onSelectCategory(article.category)}
                 className="text-[11px] font-medium uppercase text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
               >
-                • {article.category.replace('_', ' ')}
+                • {displayCategory}
               </button>
             </div>
 
-            <SentimentBadge sentiment={article.sentiment} score={article.sentimentScore} />
+            <SentimentBadge 
+              sentiment={article.sentiment} 
+              score={article.sentimentScore} 
+              isBangla={isBangla}
+              toBnNum={toBnNum}
+            />
           </div>
 
           {/* Title */}
@@ -129,7 +145,7 @@ export function NewsCard({
               href={`/news/${article.id}`}
               className="focus:outline-none"
             >
-              {article.title}
+              {displayTitle}
             </a>
           </h3>
 
@@ -159,10 +175,10 @@ export function NewsCard({
           <div className="flex items-center space-x-3">
             <span className="flex items-center space-x-1">
               <Clock className="h-3.5 w-3.5" />
-              <span>{timeAgo(article.publishedAt)}</span>
+              <span>{formatTimeAgo(article.publishedAt, isBangla, toBnNum)}</span>
             </span>
             <span>•</span>
-            <span>{article.readTimeMinutes}m read</span>
+            <span>{toBnNum(article.readTimeMinutes)}{t('m_read')}</span>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -193,7 +209,7 @@ export function NewsCard({
               title="Read full article on original publisher"
               className="flex items-center space-x-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-emerald-500"
             >
-              <span>Read Article</span>
+              <span>{t('read_article')}</span>
               <ExternalLink className="h-3 w-3" />
             </a>
           </div>

@@ -3,6 +3,8 @@
 import React from 'react';
 import { NewsArticle } from '@/types';
 import { X, Bookmark, ExternalLink, Trash2 } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import { translateHeadline } from '@/lib/translator';
 
 interface BookmarksModalProps {
   isOpen: boolean;
@@ -21,6 +23,8 @@ export function BookmarksModal({
   onClearAll,
   onSelectTicker,
 }: BookmarksModalProps) {
+  const { t, toBnNum, isBangla } = useLanguage();
+
   if (!isOpen) return null;
 
   return (
@@ -33,7 +37,7 @@ export function BookmarksModal({
           <div className="flex items-center space-x-2">
             <Bookmark className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             <h3 className="font-mono text-lg font-bold text-slate-900 dark:text-white">
-              Saved Intelligence & Watchlist Articles ({bookmarks.length})
+              {isBangla ? 'সংরক্ষিত সংবাদ তালিকা' : 'Saved Intelligence & Watchlist Articles'} ({toBnNum(bookmarks.length)})
             </h3>
           </div>
 
@@ -44,7 +48,7 @@ export function BookmarksModal({
                 className="flex items-center space-x-1 rounded-lg border border-rose-300 bg-rose-50 px-2.5 py-1 text-xs text-rose-700 hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900"
               >
                 <Trash2 className="h-3 w-3" />
-                <span>Clear All</span>
+                <span>{isBangla ? 'সব মুছুন' : 'Clear All'}</span>
               </button>
             )}
             <button
@@ -60,9 +64,11 @@ export function BookmarksModal({
           {bookmarks.length === 0 ? (
             <div className="py-12 text-center">
               <Bookmark className="mx-auto h-10 w-10 text-slate-400 dark:text-slate-600 mb-2" />
-              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">No saved articles yet</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                {isBangla ? 'এখনও কোনো সংবাদ সংরক্ষণ করা হয়নি' : 'No saved articles yet'}
+              </p>
               <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                Click the bookmark icon on any news card to save it for offline review.
+                {isBangla ? 'যেকোনো সংবাদের বুকমার্ক আইকনে ক্লিক করে সংরক্ষণ করুন।' : 'Click the bookmark icon on any news card to save it for offline review.'}
               </p>
             </div>
           ) : (
@@ -88,7 +94,7 @@ export function BookmarksModal({
                       rel="noopener noreferrer"
                       className="text-sm font-bold text-slate-900 hover:text-emerald-600 dark:text-slate-100 dark:hover:text-emerald-400 transition"
                     >
-                      {art.title}
+                      {isBangla ? translateHeadline(art.title) : art.title}
                     </a>
 
                     <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
